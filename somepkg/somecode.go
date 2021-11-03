@@ -1,17 +1,16 @@
 package somepkg
 
+import "demomockery/somepkg/models"
+
 type DataProvider interface {
-	GetData(idx int) (int, error)
+	GetData(key int) ([]models.DataRec, error)
 }
 
-func SomeLogic(data DataProvider) (int, error) {
-	first, err := data.GetData(1)
+func SomeLogic(data DataProvider) ([]models.DataRec, error) {
+	var rec []models.DataRec
+	rec, err := data.GetData(1)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	second, err := data.GetData(first)
-	if err != nil {
-		return 0, err
-	}
-	return first + second, nil
+	return rec, nil
 }

@@ -3,25 +3,22 @@ package somepkg
 import (
 	"testing"
 
-	"demomockery/somepkg/mocks"
-	"demomockery/somepkg/models"
-
+	"github.com/go-redis/redismock/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_SomeLogic_simple(t *testing.T) {
-	// build mock
-	p := new(mocks.DataProvider)
-	res := []models.DataRec{
-		{ID: 10, Val: "value A"},
-		{ID: 20, Val: "value B"},
-	}
-	// describe expected behaviour
-	p.On("GetData", 1).Return(res, nil)
+func TestCache_GetData(t *testing.T) {
+	// build Cache Client mock
+	cl, mock := redismock.NewClientMock()
+	// describe behaviour expected
+	mock.ExpectHGetAll("pfx_1").SetVal(map[string]string{"10": "value A", "20": "value B"})
+
+	// make cache for test
+	storage := NewCache(cl)
 
 	// call tested function
-	c, err := SomeLogic(p)
+	c, err := storage.GetData(1)
 
 	// check results
 	require.NoError(t, err)
